@@ -1,0 +1,130 @@
+// Challenge 02: Adding List-Based Integers
+//Emily Obaditch eobaditc
+
+#include <iostream> 
+#include <string>
+using namespace std; 
+
+// Main Execution
+
+template<typename T>
+struct Node{
+    T data; 
+    struct Node *next; 
+}; 
+
+
+template <typename T>
+struct List{
+
+        Node<T> head; 
+        List() : head ({0, NULL}) {}  //constructor 
+        void prepend(const T &data){            
+            head.next =  new Node<T>{data, head.next}; 
+        
+        }
+        
+        void clear(){
+            Node<T> * next = NULL;  
+
+            for(Node<T> *curr = head; curr !=NULL; curr = next){
+                next = curr->next; 
+                delete curr; 
+            }
+        }
+          
+
+}; 
+
+template <typename T>
+struct List<T> combine(struct List<T> &first, struct List<T> &second){
+
+    struct List<int> newList; 
+
+    int sum; 
+    bool carry = false;  
+    string sumString; 
+    Node<T> *  curr = &first.head; 
+    Node<T> *  curr2 = &second.head; 
+
+    while( curr!=NULL && curr2!=NULL){
+        if(!carry){
+            sum = (curr->data)+(curr2->data); 
+        }
+        else{
+            sum = (curr->data) + (curr2->data)+10; 
+            carry = false; 
+        }
+        if (sum >= 10){
+            carry=true; 
+        }
+        if(carry){
+            sumString+=(sum-10);             
+        }
+        curr = curr->next; 
+        curr2 = curr2->next; 
+    }
+    while(curr){
+        sumString+=(curr->data); 
+        curr = curr->next; 
+    }
+    while (curr2){
+        sumString+=(curr2->data); 
+        curr2 = curr2->next; 
+    }
+
+    
+    for(int i = sumString.length(); i>=0; i--){
+        newList.prepend(sumString[i]);    
+    }
+
+    return newList; 
+}
+
+template <typename T>
+void print(struct List<T> &source){
+    
+    for(Node<T> *curr = &source.head; curr != NULL; curr = curr ->next){
+        cout<<curr->data<<endl; 
+    }
+    
+        
+}
+
+int main(int argc, char *argv[]) {
+
+
+    string line; 
+    bool second = false; 
+
+    struct List<int> list1; 
+    struct List<int> list2; 
+    struct List<int> list3; 
+
+    while(getline(cin, line)){
+        for(int i=0; i<line.size(); i++){
+            if(line[i] == ' '){
+                second = true; 
+            }
+            else if (second){
+                list2.prepend(line[i]-48); 
+            }
+            else{
+                list1.prepend(line[i]-48); 
+            }
+
+        }
+
+        
+        second = false;
+        list3 = combine(list1, list2); 
+        print(list3); 
+        list1.clear(); 
+        list2.clear(); 
+        list3.clear(); 
+    }
+    return 0;
+}
+
+
+// vim: set sts=4 sw=4 ts=8 expandtab ft=cpp:
